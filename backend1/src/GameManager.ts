@@ -27,6 +27,7 @@ export class GameManager {
     socket.on("message", (data) => {
       const message = JSON.parse(data.toString());
 
+      // init game
       if (message.type === INIT_GAME) {
         if (this.pendingUser) {
           const game = new Game(this.pendingUser, socket);
@@ -34,13 +35,14 @@ export class GameManager {
           this.pendingUser = null;
         } else {
           this.pendingUser = socket;
-          // socket.send(
-          //   JSON.stringify({
-          //     type: "wait",
-          //   })
-          // );
+          socket.send(
+            JSON.stringify({
+              type: "wait",
+            })
+          );
         }
       }
+
       // Handle Move
       if (message.type === MOVE) {
         const curr_game = this.games.find(
@@ -48,6 +50,28 @@ export class GameManager {
         );
         if (curr_game) {
           curr_game.makeMove(socket, message.payload.move);
+        }
+      }
+
+      // new chat msg
+      if (message.type === "chat") {
+        const curr_game = this.games.find(
+          (game) => game.player1 === socket || game.player2 === socket
+        );
+        if (curr_game) {
+          curr_game.player1.emit(
+            JSON.stringify({
+              type: "chat",
+              payload: message.payload,
+            })
+          );
+
+          curr_game.player2.emit(
+            JSON.stringify({
+              type: "chat",
+              payload: message.payload,
+            })
+          );
         }
       }
     });

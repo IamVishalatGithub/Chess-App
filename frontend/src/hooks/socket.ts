@@ -9,16 +9,22 @@ export const useSocket = () => {
         const ws = new WebSocket(WS_URL);
         ws.onopen = () => {
             setSocket(ws);
+            console.log('Webws is open now.');
         }
-
-        ws.onclose = () => {
+        ws.onerror = function(error) {
+            console.error('Webws error observed:', error);
+        };
+        
+        ws.onclose = function() {
+            console.log('Webws is closed now.');
             setSocket(null);
-        }
+        };
+
 
         return () => {
             ws.close();
         }
-    }, [])
+    }, []);
 
     return socket;  
-}
+};

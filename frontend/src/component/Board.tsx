@@ -1,6 +1,6 @@
 import { Chess, Color, PieceSymbol, Square } from "chess.js";
 import React, { useState } from "react";
-
+import { Piece } from "./Piece.js";
 function Board({
   board,
   chess,
@@ -32,9 +32,9 @@ function Board({
     const location: string = col[j] + String(i);
     if (!from) setFrom(location);
     else {
-      console.log(from, ' ', location, ' ', typeof(location));
+      console.log(from, ' ', location);
      
-      chess.move({from, to: location});
+      // chess.move({from, to: location});
       setBoard(chess.board());
       socket.send(
         JSON.stringify({
@@ -50,29 +50,26 @@ function Board({
       setFrom(null);
     }
   };
+
+
+  // bg-[b7c0d8]"" : "bg-[e8edf9]"
+
   return (
-    <div className="h-150 w-150 border-b-50 m-5">
+    <div className="h-160 w-160 border-b-50 m-5">
       {board.map((row, i) => {
         return (
-          <div className="h-16 w-full flex justify-center" key={i}>
+          <div className="h-20 w-full flex justify-center" key={i}>
             {row.map((square, j) => {
               return (
                 <div
                   onClick={() => handleClick(i, j)}
-                  className={`cursor-pointer hover:border-cyan-500 hover:border-4 flex justify-center items-center text-center text-2xl w-16 h-16 ${
+                  className={`cursor-pointer hover:border-cyan-500 hover:border-4 flex justify-center items-center text-center text-2xl w-20 h-20 ${
                     "text-" + square?.color
-                  } ${(i + j) % 2 === 0 ? "bg-gray-600" : "bg-white"}`}
+                  } ${(i + j) % 2 === 0 ? "bg-[#b7c0d8]" : "bg-[#e8edf9]"}`}
                   key={j}
                 >
                   {square ? (
-                    <img
-                      className="h-10 w-5"
-                      src={`/${
-                        square?.color === "b"
-                          ? square?.type
-                          : `${square?.type?.toUpperCase()} copy`
-                      }.png`}
-                    />
+                    <Piece rank = {square.type} color={square.color}/>
                   ) : null}
                 </div>
               );
